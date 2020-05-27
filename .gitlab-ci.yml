@@ -1,0 +1,42 @@
+---
+image: python:latest
+
+services:
+  - docker:dind
+
+stages:
+  - lint
+
+
+mypy:
+  only:
+    changes:
+      - src/**/*
+  stage: lint
+  before_script:
+    - pip install mypy
+    - mypy --version
+  script:
+    - mypy --strict src
+
+pylint:
+  only:
+    changes:
+      - src/**/*
+  stage: lint
+  before_script:
+    - pip install pylint
+    - pylint --version
+  script:
+    - find src -type f -name "*.py" | xargs pylint
+
+flak8:
+  only:
+    changes:
+      - src/**/*
+  stage: lint
+  before_script:
+    - pip install flake8
+    - flake8 --version
+  script:
+    - flake8 src
