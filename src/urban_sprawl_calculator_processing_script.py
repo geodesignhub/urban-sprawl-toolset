@@ -7,10 +7,7 @@ from qgis.core import QgsProcessingOutputNumber, QgsProcessingParameterVectorLay
     QgsProcessingParameterRasterLayer, QgsProcessingParameterNumber, QgsProcessingParameterRasterDestination, \
     QgsProcessingException
 
-DEFAULT_SSA_VALUE = 1
-DEFAULT_NO_DATA_VALUE = 0
-DEFAULT_BUILD_UP_VALUE = 1
-DEFAULT_RADIUS = 2000
+from . import constants
 
 
 class UrbanSprawlCalculatorProcessingScript(QgsProcessingAlgorithm):  # type: ignore
@@ -43,11 +40,11 @@ class UrbanSprawlCalculatorProcessingScript(QgsProcessingAlgorithm):  # type: ig
         return self.tr('USL Urban Sprawl Calculator')
 
     def group(self) -> str:
-        return self.tr('Urban Sprawl')
+        return self.tr(constants.GROUP_NAME)
 
     @staticmethod
     def groupId() -> str:
-        return 'usl'
+        return constants.GROUP_ID
 
     def shortHelpString(self) -> str:
         return self.tr(
@@ -85,7 +82,7 @@ class UrbanSprawlCalculatorProcessingScript(QgsProcessingAlgorithm):  # type: ig
                 self.SSA,
                 self.tr('Share of settlement area (SSA)'),
                 QgsProcessingParameterNumber.Double,
-                defaultValue=DEFAULT_SSA_VALUE
+                defaultValue=constants.SSA_VALUE
             )
         )
 
@@ -116,7 +113,7 @@ class UrbanSprawlCalculatorProcessingScript(QgsProcessingAlgorithm):  # type: ig
                 self.NO_DATA_VALUE,
                 self.tr('Raster no data value'),
                 QgsProcessingParameterNumber.Integer,
-                defaultValue=DEFAULT_NO_DATA_VALUE
+                defaultValue=constants.NO_DATA_VALUE
             )
         )
 
@@ -125,7 +122,7 @@ class UrbanSprawlCalculatorProcessingScript(QgsProcessingAlgorithm):  # type: ig
                 self.BUILD_UP_VALUE,
                 self.tr('Raster build up value'),
                 QgsProcessingParameterNumber.Integer,
-                defaultValue=DEFAULT_BUILD_UP_VALUE
+                defaultValue=constants.BUILD_UP_VALUE
             )
         )
 
@@ -160,7 +157,7 @@ class UrbanSprawlCalculatorProcessingScript(QgsProcessingAlgorithm):  # type: ig
             'VECTOR': parameters[self.VECTOR],
             'CLIPPED_RASTER': QgsProcessing.TEMPORARY_OUTPUT
         }
-        outputs['UslClipRaster'] = processing.run('script:usl_clip_raster', alg_params, context=context,
+        outputs['UslClipRaster'] = processing.run('usl:usl_clip_raster', alg_params, context=context,
                                                   feedback=feedback, is_child_algorithm=True)
         if feedback.isCanceled():
             return {}
@@ -170,11 +167,11 @@ class UrbanSprawlCalculatorProcessingScript(QgsProcessingAlgorithm):  # type: ig
             'BUILD_UP_VALUE': parameters[self.BUILD_UP_VALUE],
             'CLIPPED_RASTER': outputs['UslClipRaster']['CLIPPED_RASTER'],
             'NO_DATA_VALUE': parameters[self.NO_DATA_VALUE],
-            'RADIUS': DEFAULT_RADIUS,
+            'RADIUS': constants.RADIUS_VALUE,
             'RASTER': parameters[self.RASTER],
             'SI_RASTER': parameters[self.OUTPUT_RASTER]
         }
-        outputs['UslSiCalculator'] = processing.run('script:usl_si_calculator', alg_params, context=context,
+        outputs['UslSiCalculator'] = processing.run('usl:usl_si_calculator', alg_params, context=context,
                                                     feedback=feedback, is_child_algorithm=True)
         if feedback.isCanceled():
             return {}
@@ -183,7 +180,7 @@ class UrbanSprawlCalculatorProcessingScript(QgsProcessingAlgorithm):  # type: ig
         alg_params = {
             'SI_RASTER': outputs['UslSiCalculator']['SI_RASTER']
         }
-        outputs['UslDisCalculator'] = processing.run('script:usl_dis_calculator', alg_params, context=context,
+        outputs['UslDisCalculator'] = processing.run('usl:usl_dis_calculator', alg_params, context=context,
                                                      feedback=feedback, is_child_algorithm=True)
 
         if feedback.isCanceled():
@@ -196,7 +193,7 @@ class UrbanSprawlCalculatorProcessingScript(QgsProcessingAlgorithm):  # type: ig
             'EMPLOYEE_COUNT': employee_count,
             'RESIDENT_COUNT': resident_count
         }
-        outputs['UslLupCalculator'] = processing.run('script:usl_lup_calculator', alg_params, context=context,
+        outputs['UslLupCalculator'] = processing.run('usl:usl_lup_calculator', alg_params, context=context,
                                                      feedback=feedback, is_child_algorithm=True)
 
         if feedback.isCanceled():
@@ -208,7 +205,7 @@ class UrbanSprawlCalculatorProcessingScript(QgsProcessingAlgorithm):  # type: ig
             'LUP': outputs['UslLupCalculator']['LUP'],
             'SSA': ssa_value
         }
-        outputs['UslWupCalculator'] = processing.run('script:usl_wup_calculator', alg_params, context=context,
+        outputs['UslWupCalculator'] = processing.run('usl:usl_wup_calculator', alg_params, context=context,
                                                      feedback=feedback, is_child_algorithm=True)
 
         return {self.OUTPUT: outputs['UslWupCalculator']['WUP']}

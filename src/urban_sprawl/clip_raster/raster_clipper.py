@@ -1,7 +1,7 @@
 import gdal
 import numpy
 
-from urban_sprawl.common.common import Common
+from ...urban_sprawl.common.common import Common
 
 
 class RasterClipper:

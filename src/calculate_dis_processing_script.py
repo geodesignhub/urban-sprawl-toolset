@@ -1,5 +1,3 @@
-import os
-import sys
 from typing import Optional, Dict, Any
 
 import numpy
@@ -7,10 +5,8 @@ from qgis.PyQt.QtCore import QCoreApplication
 from qgis.core import QgsProcessingContext, QgsProcessingFeedback, QgsProcessingAlgorithm, \
     QgsProcessingParameterRasterLayer, QgsProcessingException, QgsProcessingOutputNumber
 
-try:
-    sys.path.index(os.path.dirname(os.path.abspath(__file__)))
-except ValueError:
-    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from . import constants
+from .urban_sprawl.common.common import Common
 
 
 class CalculateDisProcessingScript(QgsProcessingAlgorithm):  # type: ignore
@@ -34,11 +30,11 @@ class CalculateDisProcessingScript(QgsProcessingAlgorithm):  # type: ignore
         return self.tr('USL DIS Calculator')
 
     def group(self) -> str:
-        return self.tr('Urban Sprawl')
+        return self.tr(constants.GROUP_NAME)
 
     @staticmethod
     def groupId() -> str:
-        return 'usl'
+        return constants.GROUP_ID
 
     def shortHelpString(self) -> str:
         return self.tr('Calculate degree of urban dispersion (DIS)')
@@ -62,8 +58,6 @@ class CalculateDisProcessingScript(QgsProcessingAlgorithm):  # type: ignore
                          parameters: Dict[str, Any],
                          context: QgsProcessingContext,
                          _: QgsProcessingFeedback) -> Dict[str, Any]:
-        from urban_sprawl.common.common import Common
-
         si_raster_path = self.parameterAsRasterLayer(parameters, self.SI_RASTER, context).source()
 
         si_matrix = Common.get_matrix_from_path(si_raster_path)
