@@ -2,7 +2,7 @@
 name=USL Urban Sprawl toolset
 email=ryan.horiguchi@hsr.ch, joel.schwab@hsr.ch
 author=Ryan Horiguchi, Joël Schwab
-version=1.0.1
+version=1.0.2
 tracker=https://gitlab.com/ba-qgis/urban-sprawl-toolset/-/issues
 repository=https://gitlab.com/ba-qgis/urban-sprawl-toolset/
 description=This plugin installs processing scripts to calculate weighted urban proliferation
