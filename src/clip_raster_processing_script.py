@@ -1,5 +1,3 @@
-import os
-import sys
 from typing import Dict, Any, Optional
 
 import gdal
@@ -10,12 +8,9 @@ from qgis.core import QgsProcessingContext, QgsProcessingFeedback, QgsProcessing
     QgsProcessingParameterRasterLayer, QgsProcessingParameterRasterDestination, \
     QgsProcessingParameterNumber, QgsProcessingParameterFeatureSource
 
-try:
-    sys.path.index(os.path.dirname(os.path.abspath(__file__)))
-except ValueError:
-    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-
-DEFAULT_NO_DATA_VALUE = 0
+from . import constants
+from .urban_sprawl.clip_raster.raster_clipper import RasterClipper
+from .urban_sprawl.common.common import Common
 
 
 class ClipRasterProcessingScript(QgsProcessingAlgorithm):  # type: ignore
@@ -42,11 +37,11 @@ class ClipRasterProcessingScript(QgsProcessingAlgorithm):  # type: ignore
         return self.tr('USL Clip Raster')
 
     def group(self) -> str:
-        return self.tr('Urban Sprawl')
+        return self.tr(constants.GROUP_NAME)
 
     @staticmethod
     def groupId() -> str:
-        return 'usl'
+        return constants.GROUP_ID
 
     def shortHelpString(self) -> str:
         return self.tr('Clip raster with the provided polygon.'
@@ -58,7 +53,7 @@ class ClipRasterProcessingScript(QgsProcessingAlgorithm):  # type: ignore
                 self.NO_DATA_VALUE,
                 self.tr('Raster no data value'),
                 QgsProcessingParameterNumber.Integer,
-                defaultValue=DEFAULT_NO_DATA_VALUE
+                defaultValue=constants.NO_DATA_VALUE
             )
         )
 
@@ -87,9 +82,6 @@ class ClipRasterProcessingScript(QgsProcessingAlgorithm):  # type: ignore
                          parameters: Dict[str, Any],
                          context: QgsProcessingContext,
                          _: QgsProcessingFeedback) -> Dict[str, Any]:
-        from urban_sprawl.clip_raster.raster_clipper import RasterClipper
-        from urban_sprawl.common.common import Common
-
         raster_path = self.parameterAsRasterLayer(parameters, self.RASTER, context).source()
         no_data_value = self.parameterAsInt(parameters, self.NO_DATA_VALUE, context)
 

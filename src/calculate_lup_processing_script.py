@@ -1,5 +1,3 @@
-import os
-import sys
 from typing import Optional, Dict, Any, cast
 
 from osgeo import gdal
@@ -8,12 +6,8 @@ from qgis.core import QgsProcessingContext, QgsProcessingFeedback, QgsProcessing
     QgsProcessingParameterRasterLayer, QgsProcessingParameterNumber, \
     QgsProcessingOutputNumber, QgsProcessingException
 
-try:
-    sys.path.index(os.path.dirname(os.path.abspath(__file__)))
-except ValueError:
-    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-
-DEFAULT_BUILD_UP_VALUE = 1
+from . import constants
+from .urban_sprawl.common.common import Common
 
 
 class CalculateLupProcessingScript(QgsProcessingAlgorithm):  # type: ignore
@@ -42,11 +36,11 @@ class CalculateLupProcessingScript(QgsProcessingAlgorithm):  # type: ignore
         return self.tr('USL LUP Calculator')
 
     def group(self) -> str:
-        return self.tr('Urban Sprawl')
+        return self.tr(constants.GROUP_NAME)
 
     @staticmethod
     def groupId() -> str:
-        return 'usl'
+        return constants.GROUP_ID
 
     def shortHelpString(self) -> str:
         return self.tr('Calculate land uptake per person (LUP)'
@@ -75,7 +69,7 @@ class CalculateLupProcessingScript(QgsProcessingAlgorithm):  # type: ignore
                 self.BUILD_UP_VALUE,
                 self.tr('Raster build up value'),
                 QgsProcessingParameterNumber.Integer,
-                defaultValue=DEFAULT_BUILD_UP_VALUE
+                defaultValue=constants.BUILD_UP_VALUE
             )
         )
 
@@ -97,8 +91,6 @@ class CalculateLupProcessingScript(QgsProcessingAlgorithm):  # type: ignore
                          parameters: Dict[str, Any],
                          context: QgsProcessingContext,
                          _: QgsProcessingFeedback) -> Dict[str, Any]:
-        from urban_sprawl.common.common import Common
-
         clipped_raster_path = self.parameterAsRasterLayer(parameters, self.CLIPPED_RASTER, context).source()
         resident_count = self.parameterAsInt(parameters, self.RESIDENT_COUNT, context)
         employee_count = self.parameterAsInt(parameters, self.EMPLOYEE_COUNT, context)

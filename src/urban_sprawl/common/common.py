@@ -3,8 +3,8 @@ from typing import Callable
 import gdal
 import numpy
 
-from urban_sprawl.common.gdal_geo_transform import GdalGeoTransform
-from urban_sprawl.common.numpy_shape import NumpyShape
+from ..common.gdal_geo_transform import GdalGeoTransform
+from ..common.numpy_shape import NumpyShape
 
 
 class Common:

@@ -1,5 +1,3 @@
-import os
-import sys
 from typing import Optional, Dict, Any
 
 import numpy
@@ -8,14 +6,9 @@ from qgis.PyQt.QtCore import QCoreApplication
 from qgis.core import QgsProcessingContext, QgsProcessingFeedback, QgsProcessingAlgorithm, \
     QgsProcessingParameterRasterLayer, QgsProcessingParameterRasterDestination, QgsProcessingParameterNumber
 
-try:
-    sys.path.index(os.path.dirname(os.path.abspath(__file__)))
-except ValueError:
-    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-
-DEFAULT_NO_DATA_VALUE = 0
-DEFAULT_BUILD_UP_VALUE = 1
-DEFAULT_RADIUS = 2000
+from . import constants
+from .urban_sprawl.common.common import Common
+from .urban_sprawl.si.si_calculator import SiCalculator
 
 
 class CalculateSiProcessingScript(QgsProcessingAlgorithm):  # type: ignore
@@ -44,11 +37,11 @@ class CalculateSiProcessingScript(QgsProcessingAlgorithm):  # type: ignore
         return self.tr('USL SI Calculator')
 
     def group(self) -> str:
-        return self.tr('Urban Sprawl')
+        return self.tr(constants.GROUP_NAME)
 
     @staticmethod
     def groupId() -> str:
-        return 'usl'
+        return constants.GROUP_ID
 
     def shortHelpString(self) -> str:
         return self.tr('Calculate SI raster')
@@ -59,7 +52,7 @@ class CalculateSiProcessingScript(QgsProcessingAlgorithm):  # type: ignore
                 self.NO_DATA_VALUE,
                 self.tr('Raster no data value'),
                 QgsProcessingParameterNumber.Integer,
-                defaultValue=DEFAULT_NO_DATA_VALUE
+                defaultValue=constants.NO_DATA_VALUE
             )
         )
 
@@ -68,7 +61,7 @@ class CalculateSiProcessingScript(QgsProcessingAlgorithm):  # type: ignore
                 self.BUILD_UP_VALUE,
                 self.tr('Raster build up value'),
                 QgsProcessingParameterNumber.Integer,
-                defaultValue=DEFAULT_BUILD_UP_VALUE
+                defaultValue=constants.BUILD_UP_VALUE
             )
         )
 
@@ -77,7 +70,7 @@ class CalculateSiProcessingScript(QgsProcessingAlgorithm):  # type: ignore
                 self.RADIUS,
                 self.tr('Horizon of perception'),
                 QgsProcessingParameterNumber.Integer,
-                defaultValue=DEFAULT_RADIUS
+                defaultValue=constants.RADIUS_VALUE
             )
         )
 
@@ -106,9 +99,6 @@ class CalculateSiProcessingScript(QgsProcessingAlgorithm):  # type: ignore
                          parameters: Dict[str, Any],
                          context: QgsProcessingContext,
                          feedback: QgsProcessingFeedback) -> Dict[str, Any]:
-        from urban_sprawl.common.common import Common
-        from urban_sprawl.si.si_calculator import SiCalculator
-
         raster_path = self.parameterAsRasterLayer(parameters, self.RASTER, context).source()
         clipped_raster_path = self.parameterAsRasterLayer(parameters, self.CLIPPED_RASTER, context).source()
         no_data_value = self.parameterAsInt(parameters, self.NO_DATA_VALUE, context)

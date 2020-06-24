@@ -1,6 +1,4 @@
 import math
-import os
-import sys
 from typing import Optional, Dict, Any
 
 from qgis.PyQt.QtCore import QCoreApplication
@@ -8,12 +6,7 @@ from qgis.core import QgsProcessingContext, QgsProcessingFeedback, QgsProcessing
     QgsProcessingParameterNumber, \
     QgsProcessingOutputNumber, QgsProcessingException
 
-try:
-    sys.path.index(os.path.dirname(os.path.abspath(__file__)))
-except ValueError:
-    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-
-DEFAULT_SSA_VALUE = 1
+from . import constants
 
 
 class CalculateWupProcessingScript(QgsProcessingAlgorithm):  # type: ignore
@@ -39,11 +32,11 @@ class CalculateWupProcessingScript(QgsProcessingAlgorithm):  # type: ignore
         return self.tr('USL WUP Calculator')
 
     def group(self) -> str:
-        return self.tr('Urban Sprawl')
+        return self.tr(constants.GROUP_NAME)
 
     @staticmethod
     def groupId() -> str:
-        return 'usl'
+        return constants.GROUP_ID
 
     def shortHelpString(self) -> str:
         return self.tr('Calculate weighted urban proliferation (WUP)'
@@ -72,7 +65,7 @@ class CalculateWupProcessingScript(QgsProcessingAlgorithm):  # type: ignore
                 self.SSA,
                 self.tr('Share of settlement area (SSA)'),
                 QgsProcessingParameterNumber.Double,
-                defaultValue=DEFAULT_SSA_VALUE
+                defaultValue=constants.SSA_VALUE
             )
         )
 
@@ -102,4 +95,4 @@ class CalculateWupProcessingScript(QgsProcessingAlgorithm):  # type: ignore
         value2 = math.exp(0.294432 * dis_value - 12.955)
         weight2 = value2 / (1 + value2)
 
-        return {self.OUTPUT: up * dis_value * weight1 * (0.5 + weight2)}
+        return {self.OUTPUT: up * weight1 * (0.5 + weight2)}
