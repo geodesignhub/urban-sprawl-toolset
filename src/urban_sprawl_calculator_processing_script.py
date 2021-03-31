@@ -207,5 +207,7 @@ class UrbanSprawlCalculatorProcessingScript(QgsProcessingAlgorithm):  # type: ig
         }
         outputs['UslWupCalculator'] = processing.run('usl:usl_wup_calculator', alg_params, context=context,
                                                      feedback=feedback, is_child_algorithm=True)
+        feedback.pushInfo('WUP' 'DIS' 'LUP')
+        feedback.pushInfo(outputs['UslWupCalculator']['WUP'], outputs['UslDisCalculator']['DIS'], outputs['UslLupCalculator']['LUP'])
 
         return {self.OUTPUT: outputs['UslWupCalculator']['WUP']}

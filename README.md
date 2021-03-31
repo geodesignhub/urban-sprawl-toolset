@@ -1,13 +1,14 @@
-# Urban Sprawl processing algorithmen set
+# Urban Sprawl processing algorithm set
 
 ## Installation
 
-The installation of the Urban Sprawl (USL) Processing algorithmen set can be done with the plugin manager.
+The installation of the Urban Sprawl (USL) Processing algorithm set can be done with the plugin manager.
+
 1. Download .zip file from [GitLab](https://gitlab.com/ba-qgis/urban-sprawl-toolset/-/archive/latest/urban-sprawl-toolset-latest.zip)
 2. Open your QGIS application
 3. Click on the `Plugins` option in the Toolbar and from there open `Manage and install plugins...`
 4. Use the option `Install from zip` and use the previously downloaded zip File.
-5. The set of processing algorithmen should now appear in the processing toolbox.
+5. The set of processing algorithm should now appear in the processing toolbox.
 
 ## Operating instructions
 
